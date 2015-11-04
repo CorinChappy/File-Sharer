@@ -7,7 +7,7 @@ require "erubis"
 
 require "json"
 
-require "database.rb"
+require "./database.rb"
 
 
 class FileSharer < Sinatra::Application

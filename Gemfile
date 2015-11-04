@@ -4,3 +4,5 @@ gem 'sinatra'
 gem 'thin'
 
 gem 'erubis'
+
+gem "sqlite3"
