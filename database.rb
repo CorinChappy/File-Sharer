@@ -51,7 +51,7 @@ class Database
         authenticated = (user != nil &&  pw == password);
 
         if authenticated then
-            return {id: user["id"], email: user["email"]};
+            return { id: user["id"], email: user["email"] };
         else
             return false;
         end
@@ -113,15 +113,13 @@ class Database
                 );
             SQL
 
-
+            true;
         end
 
         def tablesExist?
             # Do some SQL checks here to see if the db is set up
             tables = ['User', 'OneOffFiles'];
-            sql = <<-SQL
-                SELECT name FROM sqlite_master WHERE type='table' AND name in (?, ?);
-            SQL
+            sql = "SELECT name FROM sqlite_master WHERE type='table' AND name in (#{ Array.new(tables.count).fill('?').join(',') });"
 
             result = @db.execute sql, tables
 
