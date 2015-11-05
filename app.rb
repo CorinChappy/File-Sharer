@@ -12,6 +12,9 @@ require "./database.rb"
 
 class FileSharer < Sinatra::Application
     
+    @@database = Database.new;
+
+
     get "/" do
         erb :index
     end
