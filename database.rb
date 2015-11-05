@@ -3,12 +3,15 @@ require "rubygems"
 require "bundler/setup"
 
 require "sqlite3"
+require "bcrypt"
+
 
 class Database
 
     def initialize(name = "filesharer.db")
         @dbName = name;
         @db = SQLite3::Database.new name;
+        @db.results_as_hash = true;
 
         createTables unless tablesExist?
     end
@@ -29,17 +32,51 @@ class Database
 
     def getUser(id)
         ## Get the info on a user
+        @db.execute(
+            "SELECT `id`, `email` FROM `User` WHERE `id` = ?",
+            [ id ]
+        ).first;
     end
 
     def authenticateUser(email, password)
         ## Hash the pw and authenticate it
         ## Also returns the user data
+        user = @db.execute(
+            "SELECT `id`, `email`, `password` FROM `User` WHERE `email` = ?",
+            [ email ]
+        ).first;
+
+        pw = BCrypt::Password.new(user["password"]);
+
+        authenticated = (user != nil &&  pw == password);
 
         if authenticated then
-            return getUser id;
+            return {id: user["id"], email: user["email"]};
         else
             return false;
         end
+    end
+
+    def createUser(email, password)
+        # Create user col in the DB
+        ## Hash the password
+        hash = BCrypt::Password.create(password);
+
+        exist = @db.execute(
+            "SELECT `id` FROM `User` WHERE `email` = ?",
+            [ email ]
+        ).count > 0;
+
+        return false if exist;
+
+        @db.execute(
+            "INSERT INTO `User` (`email`, `password`) VALUES (?,?)",
+            [ email, hash ]
+        );
+
+        rowid = @db.last_insert_row_id;
+
+        return getUser rowid;
     end
 
 

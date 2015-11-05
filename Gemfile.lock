@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    bcrypt (3.1.10)
     daemons (1.2.3)
     erubis (2.7.0)
     eventmachine (1.0.8)
@@ -22,6 +23,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt
   erubis
   sinatra
   sqlite3
