@@ -88,17 +88,17 @@ class Database
             ## User table
             @db.execute <<-SQL
                 CREATE TABLE IF NOT EXISTS User (
-                    id       INT    PRIMARY KEY,
-                    email    STRING UNIQUE,
-                    password STRING NOT NULL
+                    id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email    STRING  UNIQUE,
+                    password STRING  NOT NULL
                 );
             SQL
 
             ## Table for files that can only be picked up once
             @db.execute <<-SQL
                 CREATE TABLE IF NOT EXISTS OneOffFiles (
-                    id              INT      PRIMARY KEY,
-                    userId          INT      NOT NULL
+                    id              INTEGER  PRIMARY KEY AUTOINCREMENT,
+                    userId          INTEGER  NOT NULL
                                              REFERENCES User (id) ON DELETE CASCADE
                                                                   ON UPDATE CASCADE,
                     uid             STRING   NOT NULL,
@@ -106,7 +106,7 @@ class Database
                     expire          DATETIME,
                     collected       BOOLEAN  DEFAULT (0) 
                                              NOT NULL,
-                    collectedUserId          REFERENCES User (id),
+                    collectedUserId INTEGER  REFERENCES User (id),
                     password        STRING,
                     requireLogin    BOOLEAN  NOT NULL
                                              DEFAULT (0) 
