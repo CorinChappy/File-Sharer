@@ -103,6 +103,10 @@ class FileSharer < Sinatra::Application
         ## Get the database info on a file
         fileData = database.getFileData uid;
 
+        if fileData == nil then
+            halt 404, erb(:file, { "error" => "File not found: Unrecoginised ID"})
+        end
+
         if fileData["collected"] > 0 then
             halt 400, erb(:file, { "error" => "File already collected" })
         end
@@ -133,7 +137,8 @@ class FileSharer < Sinatra::Application
         ## First check if the file has already been collected and so on
         fileData = database.getFileData uid;
 
-        if fileData["collected"] > 0 then
+        # 404 on actual not found and file collection
+        if fileData == nil || fileData["collected"] > 0 then
             halt 404, "file not found"
         end
 
