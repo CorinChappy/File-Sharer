@@ -17,8 +17,7 @@ class Database
     end
 
 
-
-    def addFile(uid, filename, expire, password = nil, user = nil)
+    def addFile(uid, filename, expire = nil, password = nil, user = nil, requireLogin = nil)
         # Add the file to the database
         # Will not actually move the file to the correct place in the filesystem
 
@@ -77,6 +76,13 @@ class Database
         rowid = @db.last_insert_row_id;
 
         return getUser rowid;
+    end
+
+    def uidInUse?(uid)
+        @db.execute(
+            "SELECT `id` FROM `OneOffFiles` WHERE `uid` = ?",
+            [ uid ]
+        ).count > 0;
     end
 
 

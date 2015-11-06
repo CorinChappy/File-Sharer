@@ -17,6 +17,9 @@ class FileSharer < Sinatra::Application
     @@database = Database.new;
 
 
+    ## Create uploads dir if needed
+    Dir.mkdir "uploads" unless File.exists? "uploads"
+
     get "/" do
         erb :index
     end
@@ -65,18 +68,40 @@ class FileSharer < Sinatra::Application
 
     put "/upload" do
         content_type :json
-        ## Upload here
+        # Upload here
+        return false.to_json if !params["file"];
 
-        { uid: 123456 }.to_json;
+        ## Generate a uid for this file
+        #uid = uid = SecureRandom.uuid;
+        begin
+            uid = SecureRandom.uuid
+        end while @@database.uidInUse? uid;
+
+        filename = params["file"][:filename]
+        dir = File.join("uploads", uid)
+
+        Dir.mkdir dir unless File.exists? dir
+
+        File.open(File.join(dir, filename), "w") { | file |
+            file.write(params["file"][:tempfile].read)
+        }
+
+        password = params["password"]
+        user = session["userId"]
+        requireLogin = !!params["requireLogin"]
+
+        @@database.addFile(uid, filename, nil, password, user, requireLogin)
+
+        { uid: uid, filename: filename }.to_json;
     end
 
 
 
-    get "file/:uid" do | uid |
+    get "/file/:uid" do | uid |
         ## Show a HTML interface for the file
     end
 
-    get "file/:uid/download" do | uid |
+    get "/file/:uid/download" do | uid |
         ## Serve the file directly with the "Content-Disposition: attachment" header to force browser download
     end
 

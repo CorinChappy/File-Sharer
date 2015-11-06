@@ -39,3 +39,5 @@ build/
 ## Do not commit the db
 filesharer.db
 
+## Do not commit uploads
+uploads/
