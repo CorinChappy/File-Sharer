@@ -14,7 +14,7 @@ class FileSharer < Sinatra::Application
     
     enable :sessions
 
-    @@database = Database.new;
+    database = Database.new;
 
 
     ## Create uploads dir if needed
@@ -34,7 +34,7 @@ class FileSharer < Sinatra::Application
         password = params["password"];
 
         ## Authenticate
-        user = @@database.authenticateUser(email, password);
+        user = database.authenticateUser(email, password);
 
         if !user then
             erb :login, { "error" => "Invalid email or password", "email" => email }
@@ -54,7 +54,7 @@ class FileSharer < Sinatra::Application
         password = params["password"];
 
         ## Attempt to create
-        user = @@database.createUser(email, password);
+        user = database.createUser(email, password);
 
         if !user then
             erb :signup, { "error" => "That email is already registered" }
@@ -74,7 +74,7 @@ class FileSharer < Sinatra::Application
         ## Generate a uid for this file
         begin
             uid = SecureRandom.uuid
-        end while @@database.uidInUse? uid;
+        end while database.uidInUse? uid;
 
         filename = params["file"][:filename]
         dir = File.join("uploads", uid)
@@ -89,20 +89,74 @@ class FileSharer < Sinatra::Application
         user = session["userId"]
         requireLogin = !!params["requireLogin"]
 
-        @@database.addFile(uid, filename, nil, password, user, requireLogin)
+        database.addFile(uid, filename, nil, password, user, requireLogin)
 
         { uid: uid, filename: filename }.to_json;
     end
 
 
 
+
+
     get "/file/:uid" do | uid |
-        ## Show a HTML interface for the file
+        # Show a HTML interface for the file
+        ## Get the database info on a file
+        fileData = database.getFileData uid;
+
+        if fileData["collected"] > 0 then
+            halt 400, erb(:file, { "error" => "File already collected" })
+        end
+
+        if fileData["requireLogin"] > 0 && (session["userId"] == nil || !session["userId"].is_a?(Integer)) then
+            return redirect to("/login"), 307
+        end
+
+        if fileData["password"] != nil && params["password"] != nil && params["password"] != password then
+            halt 400, erb(:file, { "passwordRequired" => true })
+        end
+
+
+        ## Checks have passed, show the page
+        erb :file, {
+            "fileData" => {
+                "uid" => fileData["uid"],
+                "filename" => fileData["filename"],
+                "expire" => fileData["expire"]
+            }
+        };
     end
 
-    get "/file/:uid/download" do | uid |
-        ## Serve the file directly with the "Content-Disposition: attachment" header to force browser download
-    end
+
+    ## Download function so both get and post requests can be used
+    downloadLambda = lambda { | uid |
+        # Serve the file directly with the "Content-Disposition: attachment" header to force browser download
+        ## First check if the file has already been collected and so on
+        fileData = database.getFileData uid;
+
+        if fileData["collected"] > 0 then
+            halt 404, "file not found"
+        end
+
+        if fileData["requireLogin"] > 0 && (session["userId"] == nil || !session["userId"].is_a?(Integer)) then
+            halt 400, "login required"
+        end
+
+        if fileData["password"] != nil && params["password"] != nil && params["password"] != password then
+            halt 400, "password required"
+        end
+
+
+        ## Update the DB to mark file as collected
+        database.collectFile uid, session["userId"];
+
+        ## Serve the file
+        headers({ "Content-Disposition" => "attachment; filename=\"" + fileData["filename"] + "\"" });
+        send_file File.join("uploads", uid, fileData["filename"]);
+        ##### This doesn't actually delete the files, might want to make some mechanism to delete files at a later point
+    }
+
+    get "/file/:uid/download", &downloadLambda
+    post "/file/:uid/download", &downloadLambda
 
 end
 

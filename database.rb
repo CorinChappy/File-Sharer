@@ -33,10 +33,36 @@ class Database
         true;
     end
 
-    def fileCollected(uid, user = nil)
+    def getFileData(uid)
+        ## Get from da database
+        @db.execute(
+            "SELECT * FROM `OneOffFiles` WHERE `uid` = ?",
+            [ uid ]
+        ).first;
+    end
+
+    # Will also return false if the file does not exist at all
+    def fileCollected?(uid)
+        collected = @db.execute(
+            "SELECT `collected` FROM `OneOffFiles` WHERE uid = ?",
+            [ uid ]
+        ).first;
+
+        return collected != nil && collected["collected"] > 0;
+    end
+
+    def collectFile(uid, user = nil)
         # Update to indicate the file has been collected
         # Will not delete the file
+        sql = <<-SQL
+            UPDATE `OneOffFiles` 
+                SET collected = ?, collectedUserId = ?
+                WHERE uid = ?
+        SQL
 
+        @db.execute sql, [ 1, user, uid ]
+
+        true;
     end
 
     def getUser(id)
@@ -116,7 +142,8 @@ class Database
                     id              INTEGER  PRIMARY KEY AUTOINCREMENT,
                     userId          INTEGER  REFERENCES User (id) ON DELETE CASCADE
                                                                   ON UPDATE CASCADE,
-                    uid             STRING   NOT NULL,
+                    uid             STRING   NOT NULL
+                                             UNIQUE,
                     filename                 NOT NULL,
                     expire          DATETIME,
                     collected       BOOLEAN  DEFAULT (0) 
