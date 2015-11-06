@@ -17,10 +17,20 @@ class Database
     end
 
 
-    def addFile(uid, filename, expire = nil, password = nil, user = nil, requireLogin = nil)
+    def addFile(uid, filename, expire = nil, password = nil, user = nil, requireLogin = false)
         # Add the file to the database
         # Will not actually move the file to the correct place in the filesystem
+        sql = <<-SQL
+            INSERT INTO `OneOffFiles`
+                (`userId`, `uid`, `filename`, `expire`, `password`, `requireLogin`)
+                VALUES (?, ?, ?, ?, ?, ?)
+        SQL
 
+        requireLogin = requireLogin ? 1 : 0;
+
+        @db.execute sql, [ user, uid, filename, expire, password, requireLogin ]
+
+        true;
     end
 
     def fileCollected(uid, user = nil)
@@ -104,8 +114,7 @@ class Database
             @db.execute <<-SQL
                 CREATE TABLE IF NOT EXISTS OneOffFiles (
                     id              INTEGER  PRIMARY KEY AUTOINCREMENT,
-                    userId          INTEGER  NOT NULL
-                                             REFERENCES User (id) ON DELETE CASCADE
+                    userId          INTEGER  REFERENCES User (id) ON DELETE CASCADE
                                                                   ON UPDATE CASCADE,
                     uid             STRING   NOT NULL,
                     filename                 NOT NULL,
@@ -129,7 +138,6 @@ class Database
 
             result = @db.execute sql, tables
 
-            return result.count;
             return result.count == tables.count;
         end
 

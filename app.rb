@@ -72,7 +72,6 @@ class FileSharer < Sinatra::Application
         return false.to_json if !params["file"];
 
         ## Generate a uid for this file
-        #uid = uid = SecureRandom.uuid;
         begin
             uid = SecureRandom.uuid
         end while @@database.uidInUse? uid;
