@@ -1,6 +1,72 @@
 <%# Renders the header (this is a sinatra feature) %>
 <%= erb :header %>
 
-<h1>Welcome!</h1>
+<body>
+  <div class="ui page">
+    <div class="ui inverted green menu navbar">
+      <a href="" class="brand item bold content-text" style="margin-left:10px;">share.me</a>
+      <div class="menu right">
+        <a href="" class="active item">help!</a>
+        <a href="" class="item">sign up</a>
+        <a href="" class="item">log in</a>
+      </div>
+    </div>
+    <!-- <div class="mobile only row">
+      <div class="ui navbar menu">
+        <a href="" class="brand item">share.me</a>
+        <div class="right menu open">
+          <a href="" class="menu item">
 
-The time is: <%= Time.now %>
+            <i class="sidebar icon"></i>
+          </a>
+        </div>
+      </div>
+    </div> -->
+  </div>
+  <div class="ui page main">
+    <div class="row content-area" style="margin-top: 150px;">
+      <div class="ui one column stackable center aligned page grid">
+         <div class="column twelve wide">
+            <a href="" id="upload-btn" class="ui yellow massive button button-shadow centered upload"><i class="cloud icon big" style="margin-left:20px;"></i><br><br>upload file(s)</a>
+         </div>
+      </div>
+    </div>
+  </div>
+  <div class="ui modal">
+    <i class="close icon"></i>
+    <div class="header">
+      upload files
+    </div>
+    <div class="content">
+      <div class="ui two column centered grid">
+        <div class="column dropbox">
+          <h2 class="ui center aligned icon header">
+            drag and drop a file
+            <br><br>
+            <i class="circular cloud icon"></i>
+          </h2>
+         
+        </div>
+      </div>
+      <div class="ui column centered grid">
+        <div class="column center aligned">
+          <span class="content-text">or select from an option below:</span>
+        </div>
+       <!--  <a href="" id="upload-btn" class="ui yellow massive button button-shadow">upload file(s) »</a> -->
+      </div>
+      <div class="ui three column centered grid">
+        <div class="column">
+          <a href="" class="ui red button parallelogram big" style="width:100%;"><p><i class="file image outline icon"></i>share image(s)</p></a>
+        </div>
+        <div class="column">
+          <a href="" class="ui orange button parallelogram big" style="width:100%;"><p><i class="linkify icon"></i>share from URL</p></a>
+        </div>
+        <div class="column">
+          <a href="" class="ui yellow button parallelogram big" style="width:100%;"><p><i class="disk outline icon"></i>share from file</p></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<%= erb :footer %>

@@ -1,0 +1,62 @@
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.js"></script>
+
+<!-- <script src="/index-scripts.js"></script> -->
+
+<script>
+$(document).ready(function(){
+  $('.right.menu.open').on("click",function(e){
+    e.preventDefault();
+    $('.ui.vertical.menu').toggle();
+  });
+
+  $('#upload-btn').on("click", function(e){
+    e.preventDefault();
+    $('.ui.modal').modal('show');
+  });
+
+  $.fn.extend({
+    filedrop: function (options) {
+      var defaults = {
+          callback: null
+      };
+      options = $.extend(defaults, options)
+      return this.each(function () {
+        var files = [];
+        
+
+        $(this).bind('dragover dragleave', function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        });
+
+        $(this).bind('drop', function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+
+            files = event.originalEvent.target.files || event.originalEvent.dataTransfer.files;
+
+            if (options.callback) {
+              for (i = 0; i < files.length; i++) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    options.callback(event.target.result);
+                }
+                reader.readAsDataURL(files[0]);
+              }
+            }
+            return false;
+        });
+      });
+    }
+  });
+
+  $('.dropbox').filedrop({
+      callback: function (file) {
+          console.log(file);
+      }
+    });
+});
+</script>
