@@ -1,0 +1,60 @@
+<%# Renders the header (this is a sinatra feature) %>
+<%= erb :header %>
+
+<body>
+  <div class="ui one column stackable centered grid" style="margin-top: 50px;">
+    <div class="column ten wide">
+      <h2 class="ui center aligned green header">
+        <div class="content">
+          sign up for an account
+        </div>
+      </h2>
+      <form class="ui large form top-buffer" id="signup-form">
+        <div class="ui stacked segment">
+          <div class="field">
+            <label>e-mail address</label>
+            <input type="text" name="email" placeholder="e-mail">
+          </div>
+          <div class="field">
+            <div class="two fields">
+              <div class="field">
+                <label>password</label>
+                <input type="password" name="password" placeholder="password">
+              </div>
+              <div class="field">
+                <label>re-enter password</label>
+                <input type="password" name="repassword" placeholder="re-enter password">
+              </div>
+            </div>
+          </div>
+          <div class="ui divider"></div>
+          <div class="field">
+            <label>full name (optional)</label>
+            <div class="two fields">
+              <div class="field">
+                <input type="text" name="first-name" placeholder="first name">
+              </div>
+              <div class="field">
+                <input type="text" name="last-name" placeholder="last name">
+              </div>
+            </div>
+          </div>
+          <div class="ui divider"></div>
+          <div class="centered">
+            <div class="field">
+              <div class="ui checkbox">
+                <input type="checkbox" tabindex="0" class="hidden">
+                <label>I agree to the <b>Terms</b> and <b>Conditions</b></label>
+              </div>
+            </div>
+            <div class="column">
+              <button class="ui yellow big button" type="submit">submit</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+<%= erb :footer %>

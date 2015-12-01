@@ -1,0 +1,36 @@
+<%# Renders the header (this is a sinatra feature) %>
+<%= erb :header %>
+
+<body>
+  <div class="ui one column stackable center aligned page grid" style="margin-top: 50px;">
+    <div class="column ten wide">
+      <div class="column">
+        <h2 class="ui green header">
+          <div class="content">
+            log in to your account
+          </div>
+        </h2>
+        <form class="ui large form">
+          <div class="ui stacked segment">
+            <div class="field">
+              <div class="ui left icon input">
+                <i class="user icon"></i>
+                <input type="text" name="email" placeholder="e-mail address">
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui left icon input">
+                <i class="lock icon"></i>
+                <input type="password" name="password" placeholder="password">
+              </div>
+            </div>
+          </div>
+          <button class="ui yellow big button" type="submit">submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+   
+</body>
+
+<%= erb :footer %>

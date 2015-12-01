@@ -3,7 +3,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.js"></script>
 
-<!-- <script src="/index-scripts.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.2.0/min/dropzone.min.js"></script>
 
 <script>
 $(document).ready(function(){
@@ -56,6 +56,50 @@ $(document).ready(function(){
   $('.dropbox').filedrop({
       callback: function (file) {
           console.log(file);
+      }
+    });
+
+  // $("div#dropbox").dropzone(
+  //   { 
+  //     url: "/upload",
+  //     clickable: true
+  //   }
+  // );
+
+  $('#signup-form')
+    .form({
+      fields: {
+        email: {
+          identifier: 'email',
+          rules: [
+            {
+              type   : 'empty',
+              prompt : 'please enter your e-mail'
+            }
+          ]
+        },
+        password: {
+          identifier: 'password',
+          rules: [
+            {
+              type   : 'empty',
+              prompt : 'please enter a password'
+            },
+            {
+              type   : 'minLength[6]',
+              prompt : 'your password must be at least {ruleValue} characters'
+            }
+          ]
+        },
+        repassword: {
+          identifier: 'repassword',
+          rules: [
+            {
+              type   : 'match[password]',
+              prompt : 'the two passwords must match!'
+            }
+          ]
+        }
       }
     });
 });
