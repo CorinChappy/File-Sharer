@@ -1,18 +1,27 @@
 <%# Renders the header (this is a sinatra feature) %>
 <%= erb :header %>
 
-  <div class="ui one column stackable centered grid" style="margin-top: 50px;">
+  <div class="ui one column stackable centered grid" style="margin: 0; margin-top: 50px;">
     <div class="column ten wide">
       <h2 class="ui center aligned green header">
         <div class="content">
           sign up for an account
         </div>
       </h2>
+
+      <% if defined? err and err then %>
+        <div class="ui negative message">
+          <div class="header">
+            <%= err %>
+          </div>
+        </div>
+      <% end %>
+
       <form class="ui large form top-buffer" id="signup-form" action="signup" method="POST">
         <div class="ui stacked segment">
           <div class="field">
             <label>e-mail address</label>
-            <input type="text" name="email" placeholder="e-mail">
+            <input type="text" name="email" placeholder="e-mail" <% if defined? email and email then %>value="<%= email %>"<% end %>>
           </div>
           <div class="field">
             <div class="two fields">
@@ -31,10 +40,10 @@
             <label>full name (optional)</label>
             <div class="two fields">
               <div class="field">
-                <input type="text" name="firstName" placeholder="first name">
+                <input type="text" name="firstName" placeholder="first name" <% if defined? firstName and firstName then %>value="<%= firstName %>"<% end %>>
               </div>
               <div class="field">
-                <input type="text" name="lastName" placeholder="last name">
+                <input type="text" name="lastName" placeholder="last name" <% if defined? lastName and lastName then %>value="<%= lastName %>"<% end %>>
               </div>
             </div>
           </div>

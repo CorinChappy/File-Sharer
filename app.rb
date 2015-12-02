@@ -60,8 +60,37 @@ class FileSharer < Sinatra::Application
     post "/signup" do
         email = params["email"];
         password = params["password"];
+        repassword = params["repassword"];
         firstName = params["firstName"];
         lastName = params["lastName"];
+
+        unless /\A[^@\s]+@([^@\s]+\.)+[^@\s]+\z/ =~ email then
+            return erb :signup, :locals => {
+                :err => "Email address not valid",
+                :email => email,
+                :firstName => firstName,
+                :lastName => lastName
+            };
+        end
+
+
+        if password.length < 6 then
+            return erb :signup, :locals => {
+                :err => "Password must be at least 6 characters long",
+                :email => email,
+                :firstName => firstName,
+                :lastName => lastName
+            };
+        end
+
+        unless password == repassword then 
+            return erb :signup, :locals => {
+                :err => "Passwords do not match",
+                :email => email,
+                :firstName => firstName,
+                :lastName => lastName
+            };
+        end
 
         ## Attempt to create
         user = database.createUser(email, password, firstName, lastName);
@@ -69,8 +98,7 @@ class FileSharer < Sinatra::Application
         if !user then
             erb :signup, :locals => { :err => "That email is already registered" }
         else
-            session[:userId] = user[:id];
-            session[:email] = user[:email];
+            session[:user] = user
             redirect to("/");
         end
     end

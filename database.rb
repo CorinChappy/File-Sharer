@@ -74,10 +74,17 @@ class Database
 
     def getUser(id)
         ## Get the info on a user
-        @db.execute(
+        user = @db.execute(
             "SELECT `id`, `email`, `firstName`, `lastName` FROM `User` WHERE `id` = ?",
             [ id ]
         ).first;
+
+        return {
+            :id => user["id"],
+            :email => user["email"],
+            :firstName => user["firstName"],
+            :lastName => user["lastName"]
+        };
     end
 
     def authenticateUser(email, password)
