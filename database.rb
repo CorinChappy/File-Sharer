@@ -88,6 +88,11 @@ class Database
             [ email ]
         ).first;
 
+        if !user then
+            return false
+        end
+
+
         pw = BCrypt::Password.new(user["password"]);
 
         authenticated = (user != nil &&  pw == password);
