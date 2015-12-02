@@ -1,7 +1,6 @@
 <%# Renders the header (this is a sinatra feature) %>
 <%= erb :header %>
 
-<body>
   <div class="ui one column stackable center aligned page grid" style="margin-top: 50px;">
     <div class="column ten wide">
       <div class="column">
@@ -10,12 +9,21 @@
             log in to your account
           </div>
         </h2>
+
+        <% if defined? err and err then %>
+          <div class="ui negative message">
+            <div class="header">
+              <%= err %>
+            </div>
+          </div>
+        <% end %>
+
         <form class="ui large form" action="/login" method="POST">
           <div class="ui stacked segment">
             <div class="field">
               <div class="ui left icon input">
                 <i class="user icon"></i>
-                <input type="text" name="email" placeholder="e-mail address">
+                <input type="text" name="email" placeholder="e-mail address" <% if defined? email and email then %>value="<%= email %>"<% end %>>
               </div>
             </div>
             <div class="field">
@@ -30,7 +38,5 @@
       </div>
     </div>
   </div>
-   
-</body>
 
 <%= erb :footer %>
