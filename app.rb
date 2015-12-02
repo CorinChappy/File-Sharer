@@ -45,6 +45,14 @@ class FileSharer < Sinatra::Application
         end
     end
 
+
+    get "/logout" do
+        session.delete "userId"
+        session.delete "email"
+        redirect to("/");
+    end
+
+
     get "/signup" do
         erb :signup
     end
@@ -52,9 +60,11 @@ class FileSharer < Sinatra::Application
     post "/signup" do
         email = params["email"];
         password = params["password"];
+        firstName = params["firstName"];
+        lastName = params["lastName"];
 
         ## Attempt to create
-        user = database.createUser(email, password);
+        user = database.createUser(email, password, firstName, lastName);
 
         if !user then
             erb :signup, { "error" => "That email is already registered" }
