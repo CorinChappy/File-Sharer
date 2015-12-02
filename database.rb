@@ -36,7 +36,8 @@ class Database
     def getFileData(uid)
         ## Get from da database
         sql = <<-SQL
-            SELECT f.*,  u.`email` FROM `OneOffFiles` f
+            SELECT f.*,  u.`email`, u.`firstName`, u.`lastName`
+            FROM `OneOffFiles` f
             LEFT JOIN `User` u ON f.`userId` = u.`id`
             WHERE f.`uid` = ?
         SQL
@@ -74,7 +75,7 @@ class Database
     def getUser(id)
         ## Get the info on a user
         @db.execute(
-            "SELECT `id`, `email` FROM `User` WHERE `id` = ?",
+            "SELECT `id`, `email`, `firstName`, `lastName` FROM `User` WHERE `id` = ?",
             [ id ]
         ).first;
     end
@@ -98,7 +99,7 @@ class Database
         end
     end
 
-    def createUser(email, password)
+    def createUser(email, password, firstName = nil, lastName = nil)
         # Create user col in the DB
         ## Hash the password
         hash = BCrypt::Password.create(password);
@@ -111,8 +112,8 @@ class Database
         return false if exist;
 
         @db.execute(
-            "INSERT INTO `User` (`email`, `password`) VALUES (?,?)",
-            [ email, hash ]
+            "INSERT INTO `User` (`email`, `password`, `firstName`, `lastName`) VALUES (?,?,?,?)",
+            [ email, hash, firstName, lastName ]
         );
 
         rowid = @db.last_insert_row_id;
@@ -136,9 +137,11 @@ class Database
             ## User table
             @db.execute <<-SQL
                 CREATE TABLE IF NOT EXISTS User (
-                    id       INTEGER PRIMARY KEY AUTOINCREMENT,
-                    email    STRING  UNIQUE,
-                    password STRING  NOT NULL
+                    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email     STRING  UNIQUE,
+                    password  STRING  NOT NULL,
+                    firstName STRING,
+                    lastName  STRING
                 );
             SQL
 

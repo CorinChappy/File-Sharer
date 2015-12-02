@@ -131,12 +131,26 @@ class FileSharer < Sinatra::Application
 
 
         ## Checks have passed, show the page
+
+        # Is there an uploader?
+        if fileData["userId"] then
+            uploader = {
+                "email" => fileData["email"],
+                "firstName" => fileData["firstName"],
+                "lastName" => fileData["lastName"]
+            }
+        else
+            uploader = nil
+        end
+
+
         erb :file, {
             "fileData" => {
                 "uid" => fileData["uid"],
                 "filename" => fileData["filename"],
                 "expire" => fileData["expire"]
-            }
+            },
+            "uploader" => uploader
         };
     end
 
