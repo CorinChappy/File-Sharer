@@ -14,6 +14,8 @@ class FileSharer < Sinatra::Application
     
     enable :sessions
 
+    #set :session_secret, "super secret thing"
+
     database = Database.new;
 
 
@@ -37,18 +39,16 @@ class FileSharer < Sinatra::Application
         user = database.authenticateUser(email, password);
 
         if !user then
-            erb :login, { "error" => "Invalid email or password", "email" => email }
+            erb :login, :locals => { :err => "Invalid email or password", :email => email }
         else
-            session["userId"] = user["id"];
-            session["email"] = user["email"];
+            session[:user] = user;
             redirect to("/");
         end
     end
 
 
     get "/logout" do
-        session.delete "userId"
-        session.delete "email"
+        session.delete :user
         redirect to("/");
     end
 
@@ -67,10 +67,10 @@ class FileSharer < Sinatra::Application
         user = database.createUser(email, password, firstName, lastName);
 
         if !user then
-            erb :signup, { "error" => "That email is already registered" }
+            erb :signup, :locals => { :err => "That email is already registered" }
         else
-            session["userId"] = user["id"];
-            session["email"] = user["email"];
+            session[:userId] = user[:id];
+            session[:email] = user[:email];
             redirect to("/");
         end
     end
@@ -96,7 +96,7 @@ class FileSharer < Sinatra::Application
         }
 
         password = params["password"]
-        user = session["userId"]
+        user = session[:userId]
         requireLogin = !!params["requireLogin"]
 
         database.addFile(uid, filename, nil, password, user, requireLogin)
@@ -114,14 +114,14 @@ class FileSharer < Sinatra::Application
         fileData = database.getFileData uid;
 
         if fileData == nil then
-            halt 404, erb(:file, { "error" => "File not found: Unrecoginised ID"})
+            halt 404, erb(:file, { :err => "File not found: Unrecoginised ID"})
         end
 
         if fileData["collected"] > 0 then
-            halt 400, erb(:file, { "error" => "File already collected" })
+            halt 400, erb(:file, { :err => "File already collected" })
         end
 
-        if fileData["requireLogin"] > 0 && (session["userId"] == nil || !session["userId"].is_a?(Integer)) then
+        if fileData["requireLogin"] > 0 && (session[:userId] == nil || !session[:userId].is_a?(Integer)) then
             return redirect to("/login"), 307
         end
 
@@ -135,22 +135,22 @@ class FileSharer < Sinatra::Application
         # Is there an uploader?
         if fileData["userId"] then
             uploader = {
-                "email" => fileData["email"],
-                "firstName" => fileData["firstName"],
-                "lastName" => fileData["lastName"]
+                :email => fileData["email"],
+                :firstName => fileData["firstName"],
+                :lastName => fileData["lastName"]
             }
         else
             uploader = nil
         end
 
 
-        erb :file, {
-            "fileData" => {
-                "uid" => fileData["uid"],
-                "filename" => fileData["filename"],
-                "expire" => fileData["expire"]
+        erb :file, :locals => {
+            :fileData => {
+                :uid => fileData["uid"],
+                :filename => fileData["filename"],
+                :expire => fileData["expire"]
             },
-            "uploader" => uploader
+            :uploader => uploader
         };
     end
 
@@ -166,7 +166,7 @@ class FileSharer < Sinatra::Application
             halt 404, "file not found"
         end
 
-        if fileData["requireLogin"] > 0 && (session["userId"] == nil || !session["userId"].is_a?(Integer)) then
+        if fileData["requireLogin"] > 0 && (session[:userId] == nil || !session[:userId].is_a?(Integer)) then
             halt 400, "login required"
         end
 
@@ -176,7 +176,7 @@ class FileSharer < Sinatra::Application
 
 
         ## Update the DB to mark file as collected
-        database.collectFile uid, session["userId"];
+        database.collectFile uid, session[:userId];
 
         ## Serve the file
         headers({ "Content-Disposition" => "attachment; filename=\"" + fileData["filename"] + "\"" });
