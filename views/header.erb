@@ -1,3 +1,6 @@
+<!DOCTYPE html>
+<html>
+<head>
 <title>Welcome!</title>
 
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css"/>
@@ -6,13 +9,27 @@
 
 <link rel="stylesheet" type="text/css" href="<%= url("/stylesheet.css")%>"/>
 
+</head>
+<body>
 <div class="ui page">
   <div class="ui inverted green menu navbar">
     <a href="/" class="brand item bold content-text" style="margin-left:10px;">share.me</a>
     <div class="menu right">
-      <a href="help" class="active item">help!</a>
-      <a href="signup" class="item">sign up</a>
-      <a href="login" class="item">log in</a>
+      <a href="/help" class="item">help!</a>
+      <a href="/signup" class="item">sign up</a>
+      <% if session[:user] then %>
+        <div class="ui simple dropdown item">
+          <%= session[:user][:email] %>
+          <i class="dropdown icon" style="line-height: 4;"></i>
+          <div class="menu">
+            <a href="/uploads" class="item">Uploads</a>
+            <a href="/logout" class="item">Logout</a>
+          </div>
+        </div>
+        <a href="/logout" class="item"></a>
+      <% else %>
+        <a href="/login" class="item">log in</a>
+      <% end %>
     </div>
   </div>
   <!-- <div class="mobile only row">
