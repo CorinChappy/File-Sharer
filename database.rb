@@ -35,8 +35,14 @@ class Database
 
     def getFileData(uid)
         ## Get from da database
+        sql = <<-SQL
+            SELECT f.*,  u.`email` FROM `OneOffFiles` f
+            LEFT JOIN `User` u ON f.`userId` = u.`id`
+            WHERE f.`uid` = ?
+        SQL
+
         @db.execute(
-            "SELECT * FROM `OneOffFiles` WHERE `uid` = ?",
+            sql,
             [ uid ]
         ).first;
     end
