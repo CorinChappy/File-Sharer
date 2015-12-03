@@ -21,17 +21,17 @@
         <div class="ui stacked segment">
           <div class="field">
             <label>e-mail address</label>
-            <input type="text" name="email" placeholder="e-mail" <% if defined? email and email then %>value="<%= email %>"<% end %>>
+            <input type="email" name="email" placeholder="e-mail" required <% if defined? email and email then %>value="<%= email %>"<% end %>>
           </div>
           <div class="field">
             <div class="two fields">
               <div class="field">
                 <label>password</label>
-                <input type="password" name="password" placeholder="password">
+                <input type="password" name="password" placeholder="password" required>
               </div>
               <div class="field">
                 <label>re-enter password</label>
-                <input type="password" name="repassword" placeholder="re-enter password">
+                <input type="password" name="repassword" placeholder="re-enter password" required>
               </div>
             </div>
           </div>

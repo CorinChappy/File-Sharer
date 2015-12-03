@@ -23,13 +23,13 @@
             <div class="field">
               <div class="ui left icon input">
                 <i class="user icon"></i>
-                <input type="text" name="email" placeholder="e-mail address" <% if defined? email and email then %>value="<%= email %>"<% end %>>
+                <input type="email" name="email" placeholder="e-mail address" required <% if defined? email and email then %>value="<%= email %>"<% end %>>
               </div>
             </div>
             <div class="field">
               <div class="ui left icon input">
                 <i class="lock icon"></i>
-                <input type="password" name="password" placeholder="password">
+                <input type="password" name="password" placeholder="password" required>
               </div>
             </div>
           </div>

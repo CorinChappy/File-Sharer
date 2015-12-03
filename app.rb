@@ -4,6 +4,7 @@ require "bundler/setup"
 
 require "sinatra/base"
 require "erubis"
+require "tilt/erubis"
 
 require "json"
 
@@ -14,7 +15,7 @@ class FileSharer < Sinatra::Application
     
     enable :sessions
 
-    #set :session_secret, "super secret thing"
+    set :session_secret, "super secret thing"
 
     database = Database.new;
 
