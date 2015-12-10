@@ -91,6 +91,16 @@ body {
     text-shadow: none;
 }
 
+.ui.download.button:hover, .ui.download.buttons .ui.download.button:hover,
+.ui.download.button:focus, .ui.download.button:active, .ui.download.button.active {
+    -webkit-box-shadow: 10px -10px 0px 0px rgba(170,170,170,1) !important;
+    -moz-box-shadow: 10px -10px 0px 0px rgba(170,170,170,1) !important;
+    box-shadow: 10px -10px 0px 0px rgba(170,170,170,1) !important;
+    background-color: #42a358;
+    color: #fff;
+    text-shadow: none;
+}
+
 .button.button-shadow {
   -webkit-box-shadow: 10px -10px 0px 0px rgba(200,200,200,1) !important;
   -moz-box-shadow: 10px -10px 0px 0px rgba(200,200,200,1) !important;

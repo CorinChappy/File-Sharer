@@ -2,40 +2,39 @@
 <%= erb :header %>
 
 <div class="ui page main">
-  <div class="row content-area" style="margin-top: 150px;">
+  <div class="row content-area" style="margin-top: 80px;">
     <div class="ui one column stackable center aligned page grid">
-       <div class="column twelve wide">
-       <% if session[:user] && session[:user][:email] == uploader[:email] then %>
-
+      <div class="column ten wide">
         <% if defined? fileData then %>
-          <div>
-            share your download link:<br><%= request.url =%>
-            <br>
-            collection status: 
-            <% if fileData[:collected] > 0 then %>
-              <span style="color:red;">file has not been collected</span>
-                
+           <% if (defined? uploader[:email]) && (session[:user]) && (session[:user][:email] == uploader[:email]) then %>
+              <h2 class="ui header">share your download link</h2>
+              <i>it hasn't been collected yet!</i><br><br>
+              <div class="white-opaque-box">
+                <div class="column">
+                  <%= request.url =%><br><br>
+                </div>
+              </div>
+          <% else %>
+            <% if fileData[:collected] > 0 then %> 
+              <h1 class="ui header" style="text-decoration: line-through;">
+                <%= fileData[:filename] =%></h1>
+              <span style="font-size:17px;"><b>this file has already been collected.</b></span><br>
+              if this message is unexpected, contact your uploader!
             <% else %>
-              <span style="color:green;">file has been collected</span>
+              <div class="white-opaque-box">
+                <h1 class="ui header"><%= fileData[:filename] =%></h1><br>
+                <a href="<%=request.url=%>/download" id="download-btn" class="ui green massive button button-shadow centered download"><i class="cloud download icon big" style="margin-left:20px;"></i><br><br>download file</a><br><br>
+              </div>
             <% end %>
-          </div>
+          <% end %>
         <% else %>
-          <div> 
-            something went wrong, try uploading your file again!
+            <div class="ui negative message">
+            <div class="header">
+              <b>this file does not exist</b>
+            </div>
           </div>
         <% end %>
-      <% else %>
-        <% if fileData[:collected] == 0 then %> 
-          <a href="<%=request.url=%>/download">click me to download file </a>
-        <% else %>
-          <%= err =%>
-          <h1 class="ui header" style="text-decoration: line-through;"><%= fileData[:filename] =%></h1>
-          <span style="font-size:17px;"><b>this file has already been collected.</b></span><br>
-          if this message is unexpected, contact your uploader!
-        <% end %>
-      <% end %>
-
-       </div>
+      </div>
     </div>
   </div>
 </div>
