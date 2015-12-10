@@ -31,7 +31,7 @@ class FileSharer < Sinatra::Application
     get "/login" do
         erb :login
     end
-
+    
     post "/login" do
         email = params["email"];
         password = params["password"];
@@ -105,7 +105,7 @@ class FileSharer < Sinatra::Application
     end
 
 
-    put "/upload" do
+    post "/upload" do
         content_type :json
         # Upload here
         return false.to_json if !params["file"];
@@ -125,7 +125,7 @@ class FileSharer < Sinatra::Application
         }
 
         password = params["password"]
-        user = session[:userId]
+        user = session[:user][:id]
         requireLogin = !!params["requireLogin"]
 
         database.addFile(uid, filename, nil, password, user, requireLogin)
@@ -133,24 +133,46 @@ class FileSharer < Sinatra::Application
         { uid: uid, filename: filename }.to_json;
     end
 
+    get "/uploads" do
+        user = session[:user][:id]
+        uploads = database.getUploads user
+        uploadData = []
+       
+        uploads.each {|upload| 
+            uploadData.push({
+                :filename => upload["filename"],
+                :uid => upload["uid"],
+                :collected => upload["collected"],
+                :collectedUserId => upload["collectedUserId"]
+            })
+        }
 
+        erb :uploads, :locals => {
+            :uploadData => uploadData
+        };
 
+    end
 
+    get "/file" do
+        erb :file
+    end
 
     get "/file/:uid" do | uid |
         # Show a HTML interface for the file
         ## Get the database info on a file
         fileData = database.getFileData uid;
 
+        user = session[:user][:id]
+
         if fileData == nil then
             halt 404, erb(:file, { :err => "File not found: Unrecoginised ID"})
         end
 
-        if fileData["collected"] > 0 then
-            halt 400, erb(:file, { :err => "File already collected" })
+        if fileData["collected"] > 0 && user != fileData["userId"] then
+            halt 400, erb(:file, { :err => "file has been collected" })
         end
 
-        if fileData["requireLogin"] > 0 && (session[:userId] == nil || !session[:userId].is_a?(Integer)) then
+        if fileData["requireLogin"] > 0 && (session[:user][:id] == nil || !session[:user][:id].is_a?(Integer)) then
             return redirect to("/login"), 307
         end
 
@@ -177,12 +199,12 @@ class FileSharer < Sinatra::Application
             :fileData => {
                 :uid => fileData["uid"],
                 :filename => fileData["filename"],
-                :expire => fileData["expire"]
+                :expire => fileData["expire"],
+                :collected => fileData["collected"]
             },
             :uploader => uploader
         };
     end
-
 
     ## Download function so both get and post requests can be used
     downloadLambda = lambda { | uid |
@@ -195,7 +217,7 @@ class FileSharer < Sinatra::Application
             halt 404, "file not found"
         end
 
-        if fileData["requireLogin"] > 0 && (session[:userId] == nil || !session[:userId].is_a?(Integer)) then
+        if fileData["requireLogin"] > 0 && (session[:user][:id] == nil || !session[:user][:id].is_a?(Integer)) then
             halt 400, "login required"
         end
 
@@ -205,7 +227,11 @@ class FileSharer < Sinatra::Application
 
 
         ## Update the DB to mark file as collected
-        database.collectFile uid, session[:userId];
+        if session[:user] && session[:user][:id] then
+            database.collectFile uid, session[:user][:id];
+        else
+            database.collectFile uid 
+        end
 
         ## Serve the file
         headers({ "Content-Disposition" => "attachment; filename=\"" + fileData["filename"] + "\"" });
@@ -217,6 +243,7 @@ class FileSharer < Sinatra::Application
     post "/file/:uid/download", &downloadLambda
 
 end
+
 
 
 

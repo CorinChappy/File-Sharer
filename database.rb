@@ -48,6 +48,19 @@ class Database
         ).first;
     end
 
+    def getUploads(id) 
+        # Get uploads
+        sql = <<-SQL
+            SELECT * FROM `OneOffFiles` f 
+            WHERE f.`userId` = ?
+        SQL
+
+        @db.execute(
+            sql,
+            [ id ]
+        );
+    end
+
     # Will also return false if the file does not exist at all
     def fileCollected?(uid)
         collected = @db.execute(

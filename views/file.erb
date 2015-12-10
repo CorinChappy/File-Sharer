@@ -1,0 +1,44 @@
+<%# Renders the header (this is a sinatra feature) %>
+<%= erb :header %>
+
+<div class="ui page main">
+  <div class="row content-area" style="margin-top: 150px;">
+    <div class="ui one column stackable center aligned page grid">
+       <div class="column twelve wide">
+       <% if session[:user][:email] == uploader[:email] then %>
+
+        <% if defined? fileData then %>
+          <div>
+            share your download link:<br><%= request.url =%>
+            <br>
+            collection status: 
+            <% if fileData[:collected] > 0 then %>
+              <span style="color:red;">file has not been collected</span>
+                
+            <% else %>
+              <span style="color:green;">file has been collected</span>
+            <% end %>
+          </div>
+        <% else %>
+          <div> 
+            something went wrong, try uploading your file again!
+          </div>
+        <% end %>
+      <% else %>
+        <% if fileData[:collected] == 0 then %> 
+          <a href="<%=request.url=%>/download">click me to download file </a>
+        <% else %>
+          <%= err =%>
+          <h1 class="ui header" style="text-decoration: line-through;"><%= fileData[:filename] =%></h1>
+          <span style="font-size:17px;"><b>this file has already been collected.</b></span><br>
+          if this message is unexpected, contact your uploader!
+        <% end %>
+      <% end %>
+
+       </div>
+    </div>
+  </div>
+</div>
+
+
+<%= erb :footer %>

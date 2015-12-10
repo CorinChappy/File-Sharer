@@ -1,0 +1,32 @@
+<%# Renders the header (this is a sinatra feature) %>
+<%= erb :header %>
+
+  <div class="ui page main">
+    <div class="row content-area" style="margin-top: 50px;">
+      <div class="ui one column stackable centered page grid">
+         <div class="column eight wide white-opaque-box">
+          <div class="column">
+            <h2 class="ui header center aligned">history of uploads</h2>
+            <div class="ui divider"></div>
+            <% if uploadData then %>
+              <% uploadData.each do |upload| %>
+              <b>filename:</b> <%= upload[:filename] =%><br>
+               <i>collected?</i>
+                <% if upload[:collected] == 1 %>
+                  <i class="checkmark icon green"></i><br>
+                <% else %>
+                  <i class="remove circle icon red"></i><br>
+                  <a href="http://<%= request.host_with_port =%>/file/<%= upload[:uid] =%>/download">download link</a><br>
+                <% end %>
+                <br>
+              <% end %>
+            <% else %>
+              you haven't uploaded anything :-(
+            <% end %>
+         </div>
+      </div>
+    </div>
+  </div>
+
+
+<%= erb :footer %>

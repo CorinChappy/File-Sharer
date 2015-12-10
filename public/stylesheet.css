@@ -64,20 +64,25 @@ body {
 }
 
 /* Containers */
-.bbox {
+.white-opaque-box {
   border-width: 2px;
-  border-color: green;
+  border-color: #ccc;
   border-style: dotted;
+  border-radius: 10px;
+  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding-top: 20px;
 }
 
-.dropbox {
-    width: 300px;
-    height: 200px;
-    border: 3px dashed #efefef;
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  background: white;
 }
 
 /* Buttons */
-.ui.upload.button:hover, .ui.upload.buttons .button:hover {
+.ui.upload.button:hover, .ui.upload.buttons .ui.upload.button:hover,
+.ui.upload.button:focus, .ui.upload.button:active, .ui.upload.button.active {
     -webkit-box-shadow: 10px -10px 0px 0px rgba(170,170,170,1) !important;
     -moz-box-shadow: 10px -10px 0px 0px rgba(170,170,170,1) !important;
     box-shadow: 10px -10px 0px 0px rgba(170,170,170,1) !important;
