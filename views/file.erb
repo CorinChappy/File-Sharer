@@ -5,7 +5,7 @@
   <div class="row content-area" style="margin-top: 150px;">
     <div class="ui one column stackable center aligned page grid">
        <div class="column twelve wide">
-       <% if session[:user][:email] == uploader[:email] then %>
+       <% if session[:user] && session[:user][:email] == uploader[:email] then %>
 
         <% if defined? fileData then %>
           <div>

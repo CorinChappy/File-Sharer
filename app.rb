@@ -162,17 +162,16 @@ class FileSharer < Sinatra::Application
         ## Get the database info on a file
         fileData = database.getFileData uid;
 
-        user = session[:user][:id]
 
         if fileData == nil then
             halt 404, erb(:file, { :err => "File not found: Unrecoginised ID"})
         end
 
-        if fileData["collected"] > 0 && user != fileData["userId"] then
+        if fileData["collected"] > 0 then
             halt 400, erb(:file, { :err => "file has been collected" })
         end
 
-        if fileData["requireLogin"] > 0 && (session[:user][:id] == nil || !session[:user][:id].is_a?(Integer)) then
+        if fileData["requireLogin"] > 0 && (session[:user] == nil || !session[:user][:id].is_a?(Integer)) then
             return redirect to("/login"), 307
         end
 
@@ -217,7 +216,7 @@ class FileSharer < Sinatra::Application
             halt 404, "file not found"
         end
 
-        if fileData["requireLogin"] > 0 && (session[:user][:id] == nil || !session[:user][:id].is_a?(Integer)) then
+        if fileData["requireLogin"] > 0 && (session[:user] == nil || !session[:user][:id].is_a?(Integer)) then
             halt 400, "login required"
         end
 
