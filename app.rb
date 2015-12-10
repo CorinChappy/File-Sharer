@@ -136,15 +136,14 @@ class FileSharer < Sinatra::Application
     get "/uploads" do
         user = session[:user][:id]
         uploads = database.getUploads user
-        uploadData = []
-       
-        uploads.each {|upload| 
-            uploadData.push({
+        
+        uploadData = uploads.map { | upload | 
+            {
                 :filename => upload["filename"],
                 :uid => upload["uid"],
                 :collected => upload["collected"],
                 :collectedUserId => upload["collectedUserId"]
-            })
+            }
         }
 
         erb :uploads, :locals => {
