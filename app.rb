@@ -125,7 +125,7 @@ class FileSharer < Sinatra::Application
         }
 
         password = params["password"]
-        user = session[:user][:id]
+        user = session[:user] && session[:user][:id]
         requireLogin = !!params["requireLogin"]
 
         database.addFile(uid, filename, nil, password, user, requireLogin)
@@ -134,6 +134,10 @@ class FileSharer < Sinatra::Application
     end
 
     get "/uploads" do
+        unless session[:user] then
+            redirect to("/login"), 307
+        end
+        
         user = session[:user][:id]
         uploads = database.getUploads user
         
