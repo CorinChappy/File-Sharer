@@ -122,7 +122,7 @@ class FileSharer < Sinatra::Application
         Dir.mkdir dir unless File.exists? dir
 
         ## Case for files
-        if params["filename"] then
+        if params["file"] then
             filename = params["file"][:filename]
 
             File.open(File.join(dir, filename), "w") { | file |
@@ -138,7 +138,7 @@ class FileSharer < Sinatra::Application
             response = Net::HTTP.get_response(uri)
 
             if response.code.to_i >= 300 then
-                return { err: "Code greater than 299 returned for URL "}.to_json
+                return { err: "Code greater than 299 returned for URL" }.to_json
             end
 
             File.open(File.join(dir, filename), "w") { | file |
