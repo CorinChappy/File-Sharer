@@ -7,6 +7,8 @@ require "erubis"
 require "tilt/erubis"
 
 require "json"
+require "net/http"
+require "uri"
 
 require "./database.rb"
 
@@ -108,21 +110,41 @@ class FileSharer < Sinatra::Application
     post "/upload" do
         content_type :json
         # Upload here
-        return false.to_json if !params["file"];
+        return false.to_json if !params["file"] && !params["url"];
 
         ## Generate a uid for this file
         begin
             uid = SecureRandom.uuid
         end while database.uidInUse? uid;
 
-        filename = params["file"][:filename]
-        dir = File.join("uploads", uid)
 
+        dir = File.join("uploads", uid)
         Dir.mkdir dir unless File.exists? dir
 
-        File.open(File.join(dir, filename), "w") { | file |
-            file.write(params["file"][:tempfile].read)
-        }
+        ## Case for files
+        if params["filename"] then
+            filename = params["file"][:filename]
+
+            File.open(File.join(dir, filename), "w") { | file |
+                file.write(params["file"][:tempfile].read)
+            }
+        else
+            ## Case for URLs
+            url = params["url"]
+
+            uri = URI.parse(url)
+            filename = File.basename(uri.path)
+
+            response = Net::HTTP.get_response(uri)
+
+            if response.code.to_i >= 300 then
+                return { err: "Code greater than 299 returned for URL "}.to_json
+            end
+
+            File.open(File.join(dir, filename), "w") { | file |
+                file.write(response.body)
+            }
+        end
 
         password = params["password"]
         user = session[:user] && session[:user][:id]
